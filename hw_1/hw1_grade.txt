@@ -1,0 +1,65 @@
+Your score: 12/24
+
+Breakdown & Comments: 
+
+----------------------------------------
+Coding Style: 2/4
+----------------------------------------
+0/1: git repo style
+0/1: code style
+1/1: notebook style
+1/1: code portability
+
+git --
+your commit messages are unclear (e.g. why is it "almost last"?)
+
+code -- 
+Please work on commenting your code so that we can understand the logic
+of your solutions.
+
+Notebook style -- 
+
+Delete "testing" line and cells (e.g. printing [unrequested] info about an 
+array or its properties for sanity checks while coding) 
+before pushing your notebooks.
+
+Put sentence-form solutions in markdown cells.
+
+----------------------------------------
+Problem 1: 1/6 
+----------------------------------------
+1/3: good attempt of each part
+0/3: successful execution of each part
+
+I don't understand what you were trying to do with your shifts -- see solutions! 
+
+----------------------------------------
+Problem 2: 7/7
+----------------------------------------
+2/2: good attempt of parts 2 and 5
+5/5: successful completion of parts 1-5
+
+part 2 - real data so use rfft()
+
+----------------------------------------
+Problem 3: 0/2 
+----------------------------------------
+0/2: successful completion of year/lunar estimates
+
+You correctly assessed that you didn't know what you were doing!
+I hope the solution set will help.
+Always feel free to shoot us an e-mail for help (can make appointment 
+outside of office hours), or try contacting people over Piazza!
+
+----------------------------------------
+Problem 4: 2/5 
+----------------------------------------
+0/1: understanding what is going on in the plot for part 1
+1/1: good attempt of part 1
+1/3: successful completion of parts 1-3
+
+unfortunately it seems like you didn't understand what the "point lead" was; 
+you weren't reporting point leads and your results for part 3 are off 
+(let me know if you want to spend time debugging)
+
+Graded by C. E. Harris
