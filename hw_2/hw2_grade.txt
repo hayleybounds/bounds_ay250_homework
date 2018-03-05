@@ -1,0 +1,72 @@
+Your score: 11/17
+
+Breakdown & Comments: 
+
+----------------------------------------
+Problem 1: 3/5
+----------------------------------------
+1/1: plot with caption
+2/4: analysis
+
+Your analysis was a little vague; like, what disadvantage in particular
+does a bar plot have here? 
+
+Here are some things that struck me about this plot that I don't think
+you noted (but I realize that different fields have different standards):
+- the labels for data are all very small, almost unreadable
+- rather than plotting data on axes, it seems that someone pulled a page out of 
+  cartography and just gives scales of the data? Which is weird. Like, axes
+  aren't even labeled? 
+- Also I can't tell what's an inset and what isn't (partly because there
+  are no axes)
+  
+In terms of describing the "story" of a plot to people outside your field,
+do note that the *significance* of "the channel that they genetically inserted 
+into the neuron causes current to flow into the neuron upon exposure to light,"
+i.e. what that adds to human knowledge, ought to be explained when you are 
+describing a plot.
+
+----------------------------------------
+Problem 2: 4/7 
+----------------------------------------
+2/3: Recreated plot
+3/3: New dynamic interactions
+0/1: Analysis of changes
+-1: export issues (see next problem)
+
+Your plot isn't the box-and-whisker plot of the original data design.
+The interactivity you implemented could have been usefully executed 
+for just the outliers on a box-and-whisker plot.
+
+Based on your answer, it seems like you implemented interactivity
+without thinking about why/what would be helpful :\ 
+
+----------------------------------------
+Problem 3: 3/5
+----------------------------------------
+4/5: Reproduced plot: title, twin_x, legend, limits, linestyles
+-1: export issues
+
+no font variety
+
+I had to rewrite your code to check it because of the way you handled
+data retrieval. In the future:
+(1) Don't fully specify paths to "local" data; e.g. rather than
+'/home/hayley/bounds_ay250_homework/hw_2/hw_2_data/*'
+use
+'hw_2_data/*'
+(2) "glob" doesn't necessarily return the same order on every machine.
+The way your code is written, it doesn't work for me because hw_2_data
+isn't in your git repo and the original hw_2_data only has 5 files so
+the index 5 is out of bounds.
+
+----------------------------------------
+Extra Credit: 1/10
+----------------------------------------
+1/3: subplots in matplotlib
+0/5: rectangular region identifier
+0/2: execution
+
+Is that a Spongebob reference??
+
+Graded by C. E. Harris
