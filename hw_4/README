@@ -1,0 +1,5 @@
+All run on a linux virtual box guest on a windows 10 host. Intel i5-7200u cpu, 2.5 GHz clock speed, two cores, four threads.
+
+Initially, the multiprocessing implementation ran faster than the serial implementation for me. However, it suddenly started taking as long or longer, despite me not changing the code. I'm not sure why it changed, I tried several different implementations to try to speed it up, but nothing worked. My dask code consistently runs quite a bit faster though!
+
+I chose four workers for everything because thats the number of threads I have. Trying different numbers of workers didn't seem to affect performance that much. I broke things into 8 chunks to prevent lags from a single slow worker.
