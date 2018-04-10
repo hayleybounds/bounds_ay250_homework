@@ -1,0 +1,19 @@
+HW 7-
+
+Problem 1: I followed the steps as described - equalized image using equalize_hist. Thresholded using adaptive threshold because that's what I found performed best. I then cleared border objects and did morphological closing. I couldn't get the coins to close completely despite trying several different things. Then I used label to create regions and region props to remove small ones. Then I got area and eccentricity and plotted them over the image
+
+Problem 2: I followed the tutorial. I adjusted some things to use lists rather than explicitly naming every variable. I adjust RANSAC parameters to try to improve my results. I found that especially for the comparison between my image one and my image two, RANSAC did not always produce great results. I was not able to find setting that prevented this, I think there were just too many false matches in the ORB keypoints, possibly because there were a lot of regions of foliage and such that could easily be confused for each other.
+
+Bonus:
+I chose the image set the ring nebula, meisser 57, from 2013.
+I did not successfully reconstruct the image, but I did try a lot of different things!
+As I understood it, the things I needed to do were to first get the calibration things: get a mean dark frame, get a mean dark_flat frame, align and get a mean flat frame. Then I subtract the dark flat frame from the flat frame mean. I assumed the dark frames and dark_flat frames did not need to be aligned because they are just pictures of nothing.
+Then, I needed to subtract the dark frame from each light frame, and divide each light frame by the normalized (flat-dark_flat) flat frame. Then I'd align the light frames and take the mean of the aligned images.
+
+Initially I ran into some trouble with images coming out very strangely. I then realized that was due to me not converting out of uint8 when adding arrays together (because of memory constraints, I added arrays together then divided by n_arrays rather than taking the mean of a bunch of arrays). In uint8 the max value in each array could only be 255, so many channels were maxing out. Even after fixing this issue and trying both registered and unregistered mean flat frames, I found that dividing by the flat frame always produced pretty much a black image. I couldn't figure out how to get that right. So instead I moved on to seeing what it I could do without correcting the light frames.
+
+I was able to register all the light frames and take their mean, and saw that this was much better than taking the mean without registering the images. Without fixing the noise, however, they looked quite bad.
+
+I think I might have been missing the point with a few of these steps, and I'm not sure that I probably read the images out of RAW format, but I did try!
+
+
