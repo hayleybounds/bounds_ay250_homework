@@ -6,4 +6,4 @@ install:
   - pip install -r hw_8/requirements.txt
 # command to run tests
 script:
-  - run_tests.sh
+  - pytest
