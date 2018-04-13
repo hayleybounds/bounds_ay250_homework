@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+            <form action="/query_database/" method="POST">
+            Make a query: 
+            <input type="text" name="query" />
+            <input type="submit" />
+            </form>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message | safe}}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% endblock %}

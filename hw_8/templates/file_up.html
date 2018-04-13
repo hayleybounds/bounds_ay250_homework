@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% set page_title = 'Choose file to upload' %}
+{% block content %}
+   
+      <form action = "/upload_file/" method = "POST" 
+         enctype = "multipart/form-data">
+        <input type = "text" name = "collection_name" />
+
+         <input type = "file" name = "file" />
+         <input type = "submit"/>
+      </form>
+      
+{% endblock %}
