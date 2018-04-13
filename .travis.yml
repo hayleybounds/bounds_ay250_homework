@@ -1,0 +1,9 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+  - pip install -r hw_8/requirements.txt
+# command to run tests
+script:
+  - hw_8/testing_test.py
