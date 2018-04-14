@@ -3,4 +3,4 @@ pybtex
 flask-sqlalchemy
 codecov
 pytest-cov
-
+numpy
