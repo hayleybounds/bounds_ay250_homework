@@ -1,3 +1,6 @@
 flask
 pybtex
 flask-sqlalchemy
+codecov
+pytest-cov
+
