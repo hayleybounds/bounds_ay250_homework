@@ -2,15 +2,15 @@ import os
 import unittest
 from basic_site import app, db, Citation, add_file_to_db
 from io import BytesIO
-from config import TestConfig
 from flask_sqlalchemy import SQLAlchemy
 
 class FlaskTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = app.test_client()
-        db.drop_all()
-        db.create_all()
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
     
     def test_home_page(self):
         rv = self.app.get('/')
@@ -48,7 +48,8 @@ class FlaskTestCase(unittest.TestCase):
                               'hw_8_data/homework_8_refs.bib')
         assert rv.status_code == 200
         assert b'ex' in rv.data
-        assert len(Citation.query.all()) > 0
+        with app.app_context():
+            assert len(Citation.query.all()) > 0
     
     def test_query_submission(self):
         """tests invalid queries and queries to empty databases"""

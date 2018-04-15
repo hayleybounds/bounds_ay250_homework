@@ -3,27 +3,16 @@ from flask import Flask, render_template, request, url_for, redirect, flash
 import flask
 import pybtex.database as pb
 from flask_sqlalchemy import SQLAlchemy
-from config import Config, TestConfig
+from config import Config
 import numpy as np
+from database import db, Citation
 from sqlalchemy.exc import OperationalError
 
 app = Flask(__name__)
 app.config.from_object(Config)
-db = SQLAlchemy(app)
-
-class Citation(db.Model):
-    __tablename__ = 'bibliography'
-    id = db.Column(db.Integer, primary_key=True)
-    ReferenceTag = db.Column(db.String)
-    Collection = db.Column(db.String)
-    Author = db.Column(db.String)
-    Journal = db.Column(db.String)
-    Keywords = db.Column(db.String)
-    Pages = db.Column(db.String)
-    Title = db.Column(db.String)
-    Volume = db.Column(db.Integer)
-    Year = db.Column(db.Integer)
-
+with app.app_context():
+    db.init_app(app)
+    db.create_all()
 
 @app.route("/")
 @app.route("/home")
@@ -115,8 +104,9 @@ def add_entry_to_db(key, entry, collection):
         keywords['Author'] = ', '.join(author_list)
     else:
         keywords['Author'] = None
-    db.session.add(Citation(**keywords, Collection = collection, ReferenceTag = key))
-    db.session.commit()
+    with app.app_context():
+        db.session.add(Citation(**keywords, Collection = collection, ReferenceTag = key))
+        db.session.commit()
     
 def format_btex_fields(string):
     """helper method to remove odd formatting from btex files"""
