@@ -1,21 +1,16 @@
 import os
 import unittest
-from basic_site import app
+from basic_site import app, db, Citation, add_file_to_db
 from io import BytesIO
+from config import TestConfig
+from flask_sqlalchemy import SQLAlchemy
 
 class FlaskTestCase(unittest.TestCase):
 
     def setUp(self):
-        #self.db_fd, flaskr.app.config['DATABASE'] = tempfile.mkstemp()
-        app.testing = True
         self.app = app.test_client()
-        #with flaskr.app.app_context():
-        #    flaskr.init_db()
-
-    def tearDown(self):
-        #os.close(self.db_fd)
-        #os.unlink(flaskr.app.config['DATABASE'])
-        pass
+        db.drop_all()
+        db.create_all()
     
     def test_home_page(self):
         rv = self.app.get('/')
@@ -37,11 +32,11 @@ class FlaskTestCase(unittest.TestCase):
         assert b'Choose file to upload' in rv.data
         assert b'Upload a File' in rv.data
     
-    def upload_file(self, coll_name, filename, filecontent=b'SOME CONTENT'):
+    def upload_file(self, coll_name, file, filename):
         """helper method to mimic the user choosing a file and collection name"""
         data = {
             'collection_name': coll_name,
-            'file': (BytesIO(filecontent), filename)
+            'file': (file, filename)
         }
 
         return self.app.post('/upload_file/', buffered=True,
@@ -49,31 +44,48 @@ class FlaskTestCase(unittest.TestCase):
                          data=data)
         
     def test_file_upload(self):
-        rv = self.upload_file('ex', 'hw_8_data/homework_8_refs.bib')
+        rv = self.upload_file('ex', open('hw_8_data/homework_8_refs.bib','rb'),
+                              'hw_8_data/homework_8_refs.bib')
         assert rv.status_code == 200
         assert b'ex' in rv.data
+        assert len(Citation.query.all()) > 0
     
     def test_query_submission(self):
         """tests invalid queries and queries to empty databases"""
-        assert b'Results for' in self.submit_query('SELECT * from bibliography').data
-        assert b'z' in self.submit_query('SELECT * from bibliography').data
+        assert b':(' in self.submit_query('Year < 1930').data
         assert b'Invalid' in self.submit_query('').data
         assert b'Invalid' in self.submit_query(' ').data
     
     def test_bad_file_upload(self):
         """tests failure to provide collection names or to choose a file"""
-        rv = self.upload_file('', 'hw_8_data/homework_8_refs.bib')
-        assert b'enter a valid collection name' in rv.data
+        rv = self.upload_file('',open('hw_8_data/homework_8_refs.bib','rb'),
+                              'hw_8_data/homework_8_refs.bib')
+        assert b'enter a valid collection name' in rv.data        
         data = {'collection_name': 'ex' }
 
         rv = self.app.post('/upload_file/', buffered=True,
                          content_type='multipart/form-data',
                          data=data)
         assert b'Please Choose a File' in rv.data
-    #def test_collection_size(self):
-    #    """make sure collection size works"""
+
+    def test_homepage_text(self):
+        """test that the homepage properly displays collection info"""
+        rv = self.app.get('/home/')
+        assert b'no collections' in rv.data
     
-    
+    def test_homepage_text_not_empty(self):
+        #then add collections and test that it shows them and entries
+        add_file_to_db('ex', open('hw_8_data/homework_8_refs.bib','rb'))
+        add_file_to_db('ex2', open('hw_8_data/homework_8_refs.bib','rb'))
+        rv = self.app.get('/home/')
+        assert b'ex (46 entries)' in rv.data
+        assert b'ex2 (46 entries)' in rv.data
+        
+    def test_real_query(self):
+        add_file_to_db('ex', open('hw_8_data/homework_8_refs.bib','rb'))
+        rv = self.submit_query('Author LIKE "%Dean%"')
+        assert b'Dean' in rv.data
+        assert b'Reddenings of Cepheids' in rv.data
 
 if __name__ == '__main__':
     unittest.main()

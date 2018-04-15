@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
+<p>
+            Query the database using sql query syntax, entering the string that follows the WHERE.
+            </br>
+            Column names are 'ReferenceTag','Collection', 'Title', 'Author','Journal', 'Keywords',
+              'Pages', 'Volume', 'Year' and 'id'.</br>
+            To use wildcards, use LIKE and % as a multiple character wildcard and _ as a single
+            character wildcard. </br>
+            Explicitly put strings in quotes. Note that the pages column is a string.</p>
             <form action="/query_database/" method="POST">
             Make a query: 
             <input type="text" name="query" />
-            <input type="submit" />
+            <input type="submit" value ="Submit Query"/>
             </form>
             {% with messages = get_flashed_messages() %}
             {% if messages %}

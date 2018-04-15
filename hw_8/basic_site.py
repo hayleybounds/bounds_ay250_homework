@@ -3,15 +3,26 @@ from flask import Flask, render_template, request, url_for, redirect, flash
 import flask
 import pybtex.database as pb
 from flask_sqlalchemy import SQLAlchemy
-from config import Config
+from config import Config, TestConfig
 import numpy as np
 from sqlalchemy.exc import OperationalError
 
 app = Flask(__name__)
 app.config.from_object(Config)
-db=SQLAlchemy(app)
+db = SQLAlchemy(app)
+"""
+db = SQLAlchemy()
 
-#TODO: somehow move at least some of this to another file?
+def setup_app(testing = False):
+    if testing:
+        app.config.from_object(TestConfig)
+    else:
+        app.config.from_object(Config)
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+"""
+
 class Citation(db.Model):
     __tablename__ = 'bibliography'
     id = db.Column(db.Integer, primary_key=True)
@@ -24,13 +35,17 @@ class Citation(db.Model):
     Title = db.Column(db.String)
     Volume = db.Column(db.Integer)
     Year = db.Column(db.Integer)
-    
-db.create_all()
+
 
 @app.route("/")
 @app.route("/home")
+@app.route("/home/", methods=['GET', 'POST'])
 def home():
     """Welcomes the user and tells them how many collections are in the database."""
+    if request.method == 'POST':
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
     if Citation.query.first() is None: #check for empty db
         this_message = 'You have no collections. Upload a file to get started!'
     else: #get number of collections and names
@@ -39,7 +54,7 @@ def home():
         this_message = ('You have %s collections, with names : ' % len(collections)) + \
                         ', '.join([s for s in colls_w_sizes]) 
     
-    return render_template('base.html', page_title="Home",
+    return render_template('home.html', page_title="Home",
                            message="Welcome! </p>This is a site for querying bibtex files </p>"+
                                    this_message)
 
@@ -47,7 +62,8 @@ def home():
 def query_db():
     if request.method == 'POST':
         query = request.form['query']
-        #empty form submission doesn't return None, so don't check for that
+        #given a query, add the sql prefix stuff to it
+        query = 'SELECT * FROM bibliography WHERE ' + query
         if query not in (""," "):
             try:
                 result=db.engine.execute(query).fetchall()
@@ -74,10 +90,7 @@ def upload_file():
         file = request.files['file']
         coll_name = request.form['collection_name']
         if coll_name not in (""," "):
-            #read and convert to this database thing.
-            x=pb.parse_bytes(file.read(), bib_format='bibtex')
-            for k, entry in x.entries.items():
-                add_entry_to_db(k, entry, coll_name)
+            add_file_to_db(coll_name, file)
             return render_template('base.html', page_title= coll_name)
         else:
             return render_template('file_up.html',
@@ -95,7 +108,12 @@ def display_query_results(results):
                 flash(field + ': ' + str(row[field]) + '</br></br>')
             else:
                 flash(field + ': ' + str(row[field]))
-    
+                
+def add_file_to_db(coll_name, file):
+    parsed_file=pb.parse_bytes(file.read(), bib_format='bibtex')
+    for k, entry in parsed_file.entries.items():
+        add_entry_to_db(k, entry, coll_name)
+                
 def add_entry_to_db(key, entry, collection):
     keywords = {}
     for field in ['Title', 'Journal', 'Keywords', 'Pages', 'Volume', 'Year']:
@@ -121,6 +139,7 @@ def format_btex_fields(string):
 def get_size_collection(collection):
     """helper method to get the number of entries in a collection"""
     return len(Citation.query.filter(Citation.Collection == collection).all())
-    
+
 if __name__ == "__main__":
+    #setup_app()
     app.run()
