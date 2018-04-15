@@ -44,8 +44,8 @@ class FlaskTestCase(unittest.TestCase):
                          data=data)
         
     def test_file_upload(self):
-        rv = self.upload_file('ex', open('hw_8_data/homework_8_refs.bib','rb'),
-                              'hw_8_data/homework_8_refs.bib')
+        rv = self.upload_file('ex', open('hw_8/hw_8_data/homework_8_refs.bib','rb'),
+                              'hw_8/hw_8_data/homework_8_refs.bib')
         assert rv.status_code == 200
         assert b'ex' in rv.data
         with app.app_context():
@@ -59,8 +59,8 @@ class FlaskTestCase(unittest.TestCase):
     
     def test_bad_file_upload(self):
         """tests failure to provide collection names or to choose a file"""
-        rv = self.upload_file('',open('hw_8_data/homework_8_refs.bib','rb'),
-                              'hw_8_data/homework_8_refs.bib')
+        rv = self.upload_file('',open('hw_8/hw_8_data/homework_8_refs.bib','rb'),
+                              'hw_8/hw_8_data/homework_8_refs.bib')
         assert b'enter a valid collection name' in rv.data        
         data = {'collection_name': 'ex' }
 
@@ -76,14 +76,14 @@ class FlaskTestCase(unittest.TestCase):
     
     def test_homepage_text_not_empty(self):
         #then add collections and test that it shows them and entries
-        add_file_to_db('ex', open('hw_8_data/homework_8_refs.bib','rb'))
-        add_file_to_db('ex2', open('hw_8_data/homework_8_refs.bib','rb'))
+        add_file_to_db('ex', open('hw_8/hw_8_data/homework_8_refs.bib','rb'))
+        add_file_to_db('ex2', open('hw_8/hw_8_data/homework_8_refs.bib','rb'))
         rv = self.app.get('/home/')
         assert b'ex (46 entries)' in rv.data
         assert b'ex2 (46 entries)' in rv.data
         
     def test_real_query(self):
-        add_file_to_db('ex', open('hw_8_data/homework_8_refs.bib','rb'))
+        add_file_to_db('ex', open('hw_8/hw_8_data/homework_8_refs.bib','rb'))
         rv = self.submit_query('Author LIKE "%Dean%"')
         assert b'Dean' in rv.data
         assert b'Reddenings of Cepheids' in rv.data
