@@ -10,18 +10,6 @@ from sqlalchemy.exc import OperationalError
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-"""
-db = SQLAlchemy()
-
-def setup_app(testing = False):
-    if testing:
-        app.config.from_object(TestConfig)
-    else:
-        app.config.from_object(Config)
-    with app.app_context():
-        db.init_app(app)
-        db.create_all()
-"""
 
 class Citation(db.Model):
     __tablename__ = 'bibliography'
