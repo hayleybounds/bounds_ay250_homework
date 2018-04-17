@@ -13,20 +13,23 @@ class FlaskTestCase(unittest.TestCase):
             db.create_all()
     
     def test_home_page(self):
+        """Checks that homepage displays welcome text"""
         rv = self.app.get('/')
         assert b'Welcome!' in rv.data
     
     def submit_query(self, query):
-        #helper function to test querying
+        """helper function to test querying"""
         return self.app.post('/query_database/', data=dict(
             query=query
         ), follow_redirects=True)
     
     def test_query_page(self):
+        """tests that the get method of query database contains the form"""
         rv = self.app.get('/query_database/')
         assert b'name="query"' in rv.data
     
     def test_upload_file_page(self):
+        """tests that the 'get' page for upload file is displayed correctly"""
         rv = self.app.get('/upload_file/')
         
         assert b'Choose file to upload' in rv.data
@@ -44,6 +47,7 @@ class FlaskTestCase(unittest.TestCase):
                          data=data)
         
     def test_file_upload(self):
+        """Test that file upload displays the correct page and actually adds to database"""
         rv = self.upload_file('ex', open('hw_8/hw_8_data/homework_8_refs.bib','rb'),
                               'hw_8/hw_8_data/homework_8_refs.bib')
         assert rv.status_code == 200
@@ -54,8 +58,9 @@ class FlaskTestCase(unittest.TestCase):
     def test_query_submission(self):
         """tests invalid queries and queries to empty databases"""
         assert b':(' in self.submit_query('Year < 1930').data
-        assert b'Invalid' in self.submit_query('').data
-        assert b'Invalid' in self.submit_query(' ').data
+        assert b'Invalid' in self.submit_query("").data
+        assert b'Invalid' in self.submit_query(" ").data
+        assert b'Invalid' in self.submit_query("sentisoints").data
     
     def test_bad_file_upload(self):
         """tests failure to provide collection names or to choose a file"""
@@ -75,7 +80,7 @@ class FlaskTestCase(unittest.TestCase):
         assert b'no collections' in rv.data
     
     def test_homepage_text_not_empty(self):
-        #then add collections and test that it shows them and entries
+        """add collections and test that it shows them and entries"""
         add_file_to_db('ex', open('hw_8/hw_8_data/homework_8_refs.bib','rb'))
         add_file_to_db('ex2', open('hw_8/hw_8_data/homework_8_refs.bib','rb'))
         rv = self.app.get('/home/')
@@ -83,10 +88,27 @@ class FlaskTestCase(unittest.TestCase):
         assert b'ex2 (46 entries)' in rv.data
         
     def test_real_query(self):
+        """After adding a collection, check that the query produces the 
+        expected results."""
         add_file_to_db('ex', open('hw_8/hw_8_data/homework_8_refs.bib','rb'))
         rv = self.submit_query('Author LIKE "%Dean%"')
         assert b'Dean' in rv.data
         assert b'Reddenings of Cepheids' in rv.data
+    
+    def test_db_clearing(self):
+        """test that database clearing works as expected by adding file to database then clearing it"""
+        rv = self.upload_file('ex', open('hw_8/hw_8_data/homework_8_refs.bib','rb'),
+                              'hw_8/hw_8_data/homework_8_refs.bib')
+        with app.app_context():
+            assert len(Citation.query.all()) > 0
+        #check that a random query doesn't clear the database
+        self.app.get('/query_database/')
+        with app.app_context():
+            assert len(Citation.query.all()) > 0
+        #then try to clear the database
+        self.app.post('/home/')
+        with app.app_context():
+            assert len(Citation.query.all()) == 0
 
 if __name__ == '__main__':
     unittest.main()
